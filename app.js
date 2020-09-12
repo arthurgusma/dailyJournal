@@ -26,7 +26,13 @@ app.get("/about", (req, res) => {
   res.render(__dirname + "/views/about.ejs", {aboutContent: aboutContent})
 })
 
+app.get("/compose", (req, res) => {
+  res.render(__dirname + "/views/compose.ejs")
+})
 
+app.post("/compose", (req, res) => {
+
+})
 
 app.listen(3000, () => {
   console.log("Server started on port 3000");
