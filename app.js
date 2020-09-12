@@ -15,7 +15,9 @@ app.use(express.static("public"));
 
 
 
-
+app.get("/", (req, res) => {
+  res.render(__dirname + "/views/home.ejs", {homeStartingContent: homeStartingContent})
+})
 
 
 
