@@ -14,9 +14,16 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
 
-
 app.get("/", (req, res) => {
   res.render(__dirname + "/views/home.ejs", {homeStartingContent: homeStartingContent})
+})
+
+app.get("/contact", (req, res) => {
+  res.render(__dirname + "/views/contact.ejs", {contactContent: contactContent})
+})
+
+app.get("/about", (req, res) => {
+  res.render(__dirname + "/views/about.ejs", {aboutContent: aboutContent})
 })
 
 
