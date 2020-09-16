@@ -3,6 +3,7 @@
 <p> <%= homeStartingContent %> </p>
 <% posts.forEach((obj) => { %>
 <h1><%=obj.title%></h1>
-<p><%=obj.body%></p>
+<p><% if (obj.body.length > 100){%><%=obj.body.substring(0,100) + " ..."%><%}else{%><%=obj.body%><%}%>
+<a href="/posts/<%= obj.title %>">Read more.</a></p>
 <% }); %>
 <%- include('parcials/footer'); -%>

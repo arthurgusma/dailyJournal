@@ -18,7 +18,7 @@ app.use(express.static("public"));
 
 
 app.get("/", (req, res) => {
-  res.render(__dirname + "/views/home.ejs", {homeStartingContent: homeStartingContent, posts: posts});
+  res.render(__dirname + "/views/home.ejs", {homeStartingContent: homeStartingContent, posts: posts,});
 });
 
 app.get("/contact", (req, res) => {
@@ -37,11 +37,11 @@ app.get("/posts/:key", (req, res) => {
   const key = lowerCase(req.params.key);
 
   posts.forEach((obj)=>{
-    const titleSource = lowerCase(obj.title);
-    if (key === titleSource) {
+    const titles = lowerCase(obj.title);
+    if (key === titles) {
       res.render(__dirname + "/views/post.ejs", {header: obj.title, body: obj.body});
     } else {
-      res.redirect("/");
+      res.render("/");
     };
   });
 
