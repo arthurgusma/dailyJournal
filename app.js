@@ -2,58 +2,93 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const lowerCase = require("lodash.lowercase");
+const mongoose = require('mongoose');
+require('dotenv').config();
+
+const app = express();
+
+mongoose.connect('mongodb+srv://' + process.env.DB_USER + ':' + process.env.DB_PASS + '@cluster0.9eljj.gcp.mongodb.net/journalDB?retryWrites=true&w=majority', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 
 const homeStartingContent = "Hello, there. Welcome to a Daily Journal by Arthur Gusmao. Here you can read about some of my latest discoveries in the tech world.";
 const aboutContent = "I'm in the process to becoming a master Web Developer. I felt in love with code since my firstd <Hello, world!/>. I love to creat web aplications by using HTML, CSS, JS, NODEJS(EXPRESS), DATABASE and others frameworks.";
 const contactContent = "Contact me by email on this adress: contatoagusmao@gmail.com";
 
-const posts = [];
-
-const app = express();
-
 app.set('view engine', 'ejs');
-
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(express.static("public"));
 
+//DB SCHEMA
+const {
+  Schema
+} = mongoose;
+const postSchema = new Schema({
+  title: String,
+  post: String
+});
+const Post = mongoose.model('Post', postSchema);
 
 app.get("/", (req, res) => {
-  res.render(__dirname + "/views/home.ejs", {homeStartingContent: homeStartingContent, posts: posts,});
+  Post.find({}, (err, posts) => {
+      if (!err) {
+        res.render("home.ejs", {
+          homeStartingContent: homeStartingContent,
+          posts: posts
+        });
+      }
+  });
 });
 
 app.get("/contact", (req, res) => {
-  res.render(__dirname + "/views/contact.ejs", {contactContent: contactContent});
+  res.render("contact.ejs", {
+    contactContent: contactContent
+  });
 });
 
 app.get("/about", (req, res) => {
-  res.render(__dirname + "/views/about.ejs", {aboutContent: aboutContent});
+  res.render("about.ejs", {
+    aboutContent: aboutContent
+  });
 });
 
 app.get("/compose", (req, res) => {
-  res.render(__dirname + "/views/compose.ejs");
+  res.render("compose.ejs");
 });
 
 app.get("/posts/:key", (req, res) => {
   const key = lowerCase(req.params.key);
-
-  posts.forEach((obj)=>{
-    const titles = lowerCase(obj.title);
-    if (key === titles) {
-      res.render(__dirname + "/views/post.ejs", {header: obj.title, body: obj.body});
-    } else {
-      res.render("/");
-    };
+  Post.find({}, (err, found) => {
+    found.forEach((obj) => {
+      const titles = lowerCase(obj.title);
+      if (key === titles) {
+        res.render("post.ejs", {
+          header: obj.title,
+          body: obj.post
+        });
+        console.log(key, titles);
+      } else {
+        res.redirect("/");
+      }
+    });
   });
 
 });
 
 app.post("/compose", (req, res) => {
-  const post = {
+  const newPost = new Post({
     title: req.body.postTitle,
-    body: req.body.postBody
-  };
-  posts.push(post);
-  res.redirect("/");
+    post: req.body.postBody
+  })
+  newPost.save((err) => {
+    if (!err) {
+      res.redirect("/");
+    }
+  });
+
 });
 
 app.listen(3000, () => {
