@@ -69,7 +69,6 @@ app.get("/posts/:key", (req, res) => {
           header: obj.title,
           body: obj.post
         });
-        console.log(key, titles);
       } else {
         res.redirect("/");
       }
